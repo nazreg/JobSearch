@@ -38,7 +38,7 @@ document.getElementById("searchButton").addEventListener("click", (e) => {
     `https://cors-anywhere.herokuapp.com/https://jobs.github.com/positions.json?description=${jobKeyword}&location=${locationKeyword}`
   )
     .then((response) => response.json())
-    .then((data) => returnJob(data));
+    .then((data) => returnJob(getCheckBox(data)));
 });
 
 function removeCards() {
@@ -95,26 +95,52 @@ function returnJob(job) {
       jobDescription.innerHTML = `${job[i].description.substring(0, 99)}...`;
 
       let howApply = document.createElement("button");
-      howApply.setAttribute("class", "card-link");
-      //howApply.setAttribute("href", "#");
-      howApply.innerHTML = "How to apply";
+      howApply.setAttribute("class", "btn btn-link");
+      howApply.setAttribute("type", "button");
+      howApply.setAttribute("data-toggle", "collapse");
 
-      howApply.addEventListener("click", () => {
-        var applyDiv = document.createElement("div");
-        applyDiv.innerHTML = job[i].how_to_apply;
-        applyDiv.style.backgroundColor = "lightblue";
-        cardBody.appendChild(applyDiv);
-      });
+      howApply.setAttribute("data-target", `#collapseExample${i}`);
+      howApply.setAttribute("aria-expanded", "false");
+      howApply.setAttribute("aria-controls", "collapseExample");
+      howApply.innerHTML = "Apply here";
 
-      let jobDetails = document.createElement("a");
-      jobDetails.setAttribute("class", "card-link");
-      jobDetails.setAttribute("href", job[i].url);
+      let howApplyDiv = document.createElement("div");
+      howApplyDiv.setAttribute("class", "collapse");
+      howApplyDiv.setAttribute("id", `collapseExample${i}`);
+
+      let howApplyDivInner = document.createElement("div");
+      howApplyDivInner.setAttribute("class", "card card-body");
+      howApplyDivInner.innerHTML = job[i].how_to_apply;
+
+      howApplyDiv.appendChild(howApplyDivInner);
+
+      //cardBody.appendChild(howApply);
+
+      // let howApply = document.createElement("button");
+      // howApply.setAttribute("class", "card-link");
+      // //howApply.setAttribute("href", "#");
+      // howApply.innerHTML = "How to apply";
+
+      // howApply.addEventListener("click", () => {
+      //   var applyDiv = document.createElement("div");
+      //   applyDiv.innerHTML = job[i].how_to_apply;
+      //   applyDiv.style.backgroundColor = "lightblue";
+      //   cardBody.appendChild(applyDiv);
+      // });
+
+      let jobDetails = document.createElement("button");
+      jobDetails.setAttribute("class", "btn btn-link");
+      jobDetails.setAttribute(
+        "onclick",
+        `window.open('${job[i].url}','_blank')`
+      );
       jobDetails.innerHTML = "Job Details";
 
       cardBody.appendChild(cardTitle);
       cardBody.appendChild(jobDescription);
       cardBody.appendChild(howApply);
       cardBody.appendChild(jobDetails);
+      cardBody.appendChild(howApplyDiv);
 
       jobDivs[i].appendChild(cardBody);
       document.getElementById("results").appendChild(jobDivs[i]);
@@ -124,4 +150,47 @@ function returnJob(job) {
       "message"
     ).innerHTML = `<h3>No results found. Enter different job description/location</h3>`;
   }
+}
+
+function getCheckBox(jobs) {
+  // 1. if type is full time return array of full time
+  // 2. if location remote, return array of remote
+  // 3. if type is contract, return array of contract
+  // 4. if more than one checked, return conbine array
+
+  let fullTime = document.getElementById("full_time");
+  let contract = document.getElementById("contract");
+  let remote = document.getElementById("remote");
+
+  jobfilter = [];
+
+  if (fullTime.checked || contract.checked || remote.checked) {
+    if (fullTime.checked) {
+      for (let x = 0; x < jobs.length; x++) {
+        if (jobs[x].type == "Full Time") {
+          jobfilter.push(jobs[x]);
+        }
+      }
+    }
+
+    if (contract.checked) {
+      for (let x = 0; x < jobs.length; x++) {
+        if (jobs[x].type === "Contract") {
+          jobfilter.push(jobs[x]);
+        }
+      }
+    }
+
+    if (remote.checked) {
+      for (let x = 0; x < jobs.length; x++) {
+        if (jobs[x].location === "Remote") {
+          jobfilter.push(jobs[x]);
+        }
+      }
+    }
+  } else {
+    jobfilter = jobs;
+  }
+
+  return jobfilter;
 }
