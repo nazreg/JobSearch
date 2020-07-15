@@ -1,0 +1,16 @@
+#results {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  fle
+}
+
+#search {
+  display: flex;
+  justify-content: center;
+}
+
+#message {
+  display: flex;
+  justify-content: center;
+}
