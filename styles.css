@@ -24,7 +24,7 @@
   font-family: "Josefin Sans", sans-serif;
 }
 
-/* #checkboxes {
+#checkboxes {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -43,4 +43,4 @@
 
 .imgBanner {
   width: 500px;
-} */
+}
